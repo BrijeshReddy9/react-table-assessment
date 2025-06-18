@@ -6,28 +6,44 @@ type User = {
   id: number;
   firstName: string;
   lastName: string;
+  fullName: string;
   email: string;
   city: string;
+  registeredAt: string;
+  dsr: number;
 };
 
 const initialColumns = [
   { key: 'id', label: 'ID' },
   { key: 'firstName', label: 'First Name' },
   { key: 'lastName', label: 'Last Name' },
+  { key: 'fullName', label: 'Full Name' },
   { key: 'email', label: 'Email' },
-  { key: 'city', label: 'City' }
+  { key: 'city', label: 'City' },
+  { key: 'registeredAt', label: 'Registered Date' },
+  { key: 'dsr', label: 'DSR' }
 ] as const;
 
 type ColumnKey = typeof initialColumns[number]['key'];
 
 const generateUsers = (count = 1000): User[] =>
-  Array.from({ length: count }, (_, i) => ({
-    id: i + 1,
-    firstName: faker.person.firstName(),
-    lastName: faker.person.lastName(),
-    email: faker.internet.email(),
-    city: faker.location.city()
-  }));
+  Array.from({ length: count }, (_, i) => {
+    const firstName = faker.person.firstName();
+    const lastName = faker.person.lastName();
+    const registeredAt = faker.date.past({ years: 2 });
+    const now = new Date();
+    const dsr = Math.floor((now.getTime() - registeredAt.getTime()) / (1000 * 60 * 60 * 24));
+    return {
+      id: i + 1,
+      firstName,
+      lastName,
+      fullName: `${firstName} ${lastName}`,
+      email: faker.internet.email(),
+      city: faker.location.city(),
+      registeredAt: registeredAt.toISOString().split('T')[0],
+      dsr
+    };
+  });
 
 const TableWithoutLibraries = () => {
   const [users] = useState(generateUsers());

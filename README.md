@@ -112,3 +112,73 @@ This component rebuilds everything **without table libraries**:
 | TypeScript Support  | ✅                | ✅                    |
 
 ---
+
+## 🔁 Infinite or Occlusion Scroll Considerations (My Approach)
+
+When working with large datasets, I prioritized performance and responsiveness. I chose to implement **occlusion scrolling** (a.k.a. virtual scrolling) using `react-window` because it only renders visible rows rather than loading the entire dataset into the DOM.
+
+---
+
+### ⚙️ Why I Chose Occlusion Scrolling
+
+Occlusion scrolling helps address key performance concerns:
+
+- 🧠 Reduces memory usage by limiting DOM nodes
+- 🚀 Improves scroll performance with large datasets
+- 🪶 Keeps the UI responsive, even with 1000+ rows
+
+Since I was generating a fixed number of fake records using `faker`, true infinite scroll wasn’t necessary for this use case.
+
+---
+
+### 🧱 How I Integrated `react-window`
+
+I used the `FixedSizeList` component from `react-window` to render only a small portion of rows at a time:
+
+```tsx
+<FixedSizeList
+  height={400}
+  itemSize={40}
+  itemCount={data.length}
+  width="100%"
+>
+  {RowRenderer}
+</FixedSizeList>
+```
+
+Rows are rendered as `div` containers using flex layout to maintain compatibility with virtualization.
+
+---
+
+### 🤝 Integration with `@tanstack/react-table`
+
+For the library-based implementation (`DataTable`), I used `@tanstack/react-table` to manage sorting, column order, and row models. It seamlessly integrates with `react-window` by passing the final row list into the virtualized component.
+
+This gave me the best of both worlds:
+
+- ✅ Headless table logic from `@tanstack/react-table`
+- ✅ High-performance rendering from `react-window`
+
+---
+
+### 🔄 Infinite Scroll (Optional)
+
+While infinite scrolling wasn’t needed here, I designed the system so it could easily support it in the future. For example:
+
+- Use `onItemsRendered` from `react-window` to detect scroll end
+- Fetch additional rows from a backend
+- Append the new data into the current dataset
+
+This pattern would work in both custom and library-based versions.
+
+---
+
+### 🧠 Summary of My Considerations
+
+| Concern                         | My Solution                            |
+|----------------------------------|----------------------------------------|
+| Handling large datasets          | Used `react-window` for virtualization |
+| Minimizing DOM nodes             | Rendered only visible rows             |
+| Keeping UI responsive            | Lightweight rendering strategy         |
+| Working with table logic         | Integrated with `@tanstack/react-table` |
+| Future scalability (infinite scroll) | Easily extendable with scroll events  |

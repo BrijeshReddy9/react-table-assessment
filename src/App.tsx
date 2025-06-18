@@ -2,6 +2,7 @@ import React, { useMemo } from 'react';
 import DataTable from './components/DataTable';
 import { generateFakeUsers } from './hooks/useFakeData';
 import { ColumnDef } from '@tanstack/react-table';
+import TableWithoutLibraries from './components/Table';
 
 export type User = {
   id: number;
@@ -45,9 +46,15 @@ const App: React.FC = () => {
   ], []);
 
   return (
+    <div>
     <div style={{ padding: 20 }}>
-      <h1>Virtualized Sortable Table</h1>
+      <h1>Virtualized Sortable Table (with librabries) </h1>
       <DataTable data={data} columns={columns} />
+    </div>
+    <div style={{ padding: 20 }}>
+      <h1>Virtualized Sortable Table (without librabries) </h1>
+      <TableWithoutLibraries  />
+    </div>
     </div>
   );
 };
